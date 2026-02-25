@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using client.Core;
+using client.UI;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace client
+namespace client.Workers
 {
     public class ChatClientWorker : BackgroundService
     {

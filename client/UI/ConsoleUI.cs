@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace server 
+namespace client.UI 
 {
     public static class ConsoleUI
     {
@@ -12,15 +12,15 @@ namespace server
             lock (_lock)
             {
                 Console.Clear();
-                Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
                 Console.WriteLine(@"
+
 ___________.___________  ___________ ___________________          ____  __.________    _______ __________ 
 \_   _____/|   \______ \ \_   _____//   _____/\____    /         |    |/ _|\______ \   \      \\______   \
  |    __)  |   ||    |  \ |    __)_ \_____  \   /     /   ______ |      <   |    |  \  /   |   \|     ___/
  |     \   |   ||    `   \|        \/        \ /     /_  /_____/ |    |  \  |    `   \/    |    \    |    
  \___  /   |___/_______  /_______  /_______  //_______ \         |____|__ \/_______  /\____|__  /____|    
-     \/                \/        \/        \/         \/                 \/        \/         \/          
-                ");
+     \/                \/        \/        \/         \/                 \/        \/         \/             ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(new string('=', 90));
                 Console.ForegroundColor = ConsoleColor.Yellow;
@@ -46,7 +46,7 @@ ___________.___________  ___________ ___________________          ____  __._____
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write($"[{DateTime.Now:HH:mm:ss}] ");
-                Console.ForegroundColor = ConsoleColor.Magenta; // A partner színe lila
+                Console.ForegroundColor = ConsoleColor.Magenta; 
                 Console.Write($"[{partnerName}]: ");
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine(message);
@@ -60,7 +60,7 @@ ___________.___________  ___________ ___________________          ____  __._____
             {
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 Console.Write($"[{DateTime.Now:HH:mm:ss}] ");
-                Console.ForegroundColor = ConsoleColor.Green; // A te színed zöld
+                Console.ForegroundColor = ConsoleColor.Green; 
                 Console.Write("[Én]: ");
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Console.WriteLine(message);

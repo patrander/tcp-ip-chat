@@ -7,45 +7,53 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using server.Configuration;
 
-namespace client
+namespace server.Core
 {
-    public class ChatClient : IChatClient
+    public class ChatServer : IChatServer
     {
         public event Action<string> OnMessageReceived;
-        public event Action OnDisconnected;
+        public event Action OnClientDisconnected;
 
-        private readonly ILogger<ChatClient> _logger;
-        private readonly ChatClientOptions _options;
+        private readonly ILogger<ChatServer> _logger;
+        private readonly ChatServerOptions _options;
 
+        private TcpListener _listener;
         private TcpClient _client;
         private NetworkStream _stream;
 
-        public ChatClient(ILogger<ChatClient> logger, IOptions<ChatClientOptions> options)
+        
+        public ChatServer(ILogger<ChatServer> logger, IOptions<ChatServerOptions> options)
         {
             _logger = logger;
             _options = options.Value;
-            _client = new TcpClient();
         }
 
-        public async Task ConnectAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             try
             {
-                _logger.LogInformation("Kapcsolódás a szerverhez ({IP}:{Port})...", _options.IpAddress, _options.Port);
+                var ip = IPAddress.Parse(_options.IpAddress);
+                _listener = new TcpListener(ip, _options.Port);
+                _listener.Start();
 
-                await _client.ConnectAsync(IPAddress.Parse(_options.IpAddress), _options.Port, cancellationToken);
+                
+                _logger.LogInformation("Szerver elindult a {IP}:{Port} címen.", _options.IpAddress, _options.Port);
+                _logger.LogInformation("Várakozás a kliens csatlakozására...");
+
+                _client = await _listener.AcceptTcpClientAsync(cancellationToken);
                 _stream = _client.GetStream();
 
-                _logger.LogInformation("Sikeres csatlakozás!");
+                _logger.LogInformation("Kliens sikeresen csatlakozott!");
 
-               
+                
                 _ = Task.Run(() => ReadLoopAsync(cancellationToken), cancellationToken);
             }
-            catch (SocketException ex)
+            catch (Exception ex) when (ex is not OperationCanceledException)
             {
-                _logger.LogError(ex, "Nem sikerült csatlakozni a szerverhez.");
-                throw; 
+                _logger.LogError(ex, "Hiba a szerver indításakor.");
+                Stop();
             }
         }
 
@@ -57,14 +65,11 @@ namespace client
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(message);
                 await _stream.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
-
             }
             catch (Exception ex) when (ex is IOException || ex is SocketException)
             {
                 _logger.LogWarning("A kapcsolat megszakadt üzenetküldés közben.");
             }
-
-
         }
 
         private async Task ReadLoopAsync(CancellationToken token)
@@ -77,8 +82,8 @@ namespace client
                     int byteCount = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
                     if (byteCount == 0)
                     {
-                        _logger.LogInformation("A szerver bontotta a kapcsolatot.");
-                        OnDisconnected?.Invoke();
+                        _logger.LogInformation("A kliens váratlanul bontotta a kapcsolatot.");
+                        OnClientDisconnected?.Invoke();
                         break;
                     }
 
@@ -88,16 +93,17 @@ namespace client
             }
             catch (Exception ex) when (ex is IOException || ex is SocketException || ex is OperationCanceledException)
             {
-                _logger.LogInformation("Az olvasási folyamat leállt.");
-                OnDisconnected?.Invoke();
+                _logger.LogInformation("Az olvasási folyamat befejeződött.");
+                OnClientDisconnected?.Invoke();
             }
         }
 
-        public void Disconnect()
+        public void Stop()
         {
             _stream?.Close();
             _client?.Close();
-            _logger.LogInformation("Kliens hálózati erőforrások felszabadítva.");
+            _listener?.Stop();
+            _logger.LogInformation("Szerver hálózati erőforrások felszabadítva.");
         }
     }
 }

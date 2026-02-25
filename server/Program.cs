@@ -1,5 +1,9 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using server.Commands;
+using server.Configuration;
+using server.Core;
+using server.Workers;
 
 namespace server
 {
@@ -15,6 +19,11 @@ namespace server
                     services.Configure<ChatServerOptions>(hostContext.Configuration.GetSection("ChatServerSettings"));
                     
                     services.AddSingleton<IChatServer, ChatServer>();
+
+                    services.AddSingleton<CommandDispatcher>();
+
+                    services.AddTransient<IChatCommand, TimeCommand>();
+                    services.AddTransient<IChatCommand, RollCommand>();
 
                     services.AddHostedService<ChatServerWorker>();
                     services.AddHostedService<ConsoleInputWorker>();

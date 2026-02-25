@@ -2,15 +2,16 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace client
+namespace server.Core
 {
-    public interface IChatClient
+    public interface IChatServer
     {
         event Action<string> OnMessageReceived;
-        event Action OnDisconnected;
+        event Action OnClientDisconnected;
+    
 
-        Task ConnectAsync(CancellationToken cancellationToken);
+        Task StartAsync(CancellationToken cancellationToken);
         Task SendMessageAsync(string message, CancellationToken cancellationToken);
-        void Disconnect();
+        void Stop();
     }
 }

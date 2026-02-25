@@ -1,41 +1,45 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using client.Core;
+using client.UI;
 using Microsoft.Extensions.Hosting;
 
-namespace server
+namespace client.Workers
 {
     public class ConsoleInputWorker : BackgroundService
     {
-        private readonly IChatServer _chatServer;
+        private readonly IChatClient _chatClient;
         private readonly IHostApplicationLifetime _appLifetime;
 
-        public ConsoleInputWorker(IChatServer chatServer, IHostApplicationLifetime appLifetime)
+        public ConsoleInputWorker(IChatClient chatClient, IHostApplicationLifetime appLifetime)
         {
-            _chatServer = chatServer;
+            _chatClient = chatClient;
             _appLifetime = appLifetime;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await Task.Delay(1000, stoppingToken);
+            await Task.Delay(500, stoppingToken);
 
             await Task.Run(async () =>
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     string input = Console.ReadLine();
+
+                    
                     if (string.IsNullOrWhiteSpace(input)) continue;
 
                     if (input.Trim().ToLower() == "exit")
                     {
-                        ConsoleUI.WriteSystemMessage("Szerver leállítása...");
+                        ConsoleUI.WriteSystemMessage("Kilépés iniciálva...");
                         _appLifetime.StopApplication();
                         break;
                     }
 
                     
-                    await _chatServer.SendMessageAsync(input, stoppingToken);
+                    await _chatClient.SendMessageAsync(input, stoppingToken);
 
                     
                     ConsoleUI.WriteMyMessage(input);
