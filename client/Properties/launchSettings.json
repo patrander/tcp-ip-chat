@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "client": {
+      "commandName": "Project"
+    },
+    "Profile 1": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Users\\uw90m\\Desktop\\alkalmazas\\socket\\tcp-ip_client-server\\client\\client.csproj"
+    }
+  }
+}
