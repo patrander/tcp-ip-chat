@@ -20,6 +20,4 @@ A kódbázis mind a Kliens, mind a Szerver oldalon szigorú logikai szétválasz
 ├── Workers/         # Háttérben futó hosztolt szolgáltatások
 └── UI/              # Eseményvezérelt vizuális megjelenítés
 
-🤖 AI-Assisted Development
-Ezt a projektet tanulási és fejlődési céllal hoztam létre. A fejlesztés során a Google Gemini AI szolgált mentorként és "pair-programming" partnerként. Az AI segítségével sajátítottam el és implementáltam a projektben látható haladó koncepciókat, mint például a .NET Generic Host felépítését, az Eseményvezérelt (Event-Driven) kommunikációt a rétegek között, valamint a Command Pattern alkalmazását a szerveroldali parancsokhoz.
 
