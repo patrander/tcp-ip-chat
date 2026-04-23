@@ -8,6 +8,7 @@ namespace server.Commands
         public string Name => "/roll";
         public string Description => "Dob egy véletlen számot 1 és 100 között.";
 
+
         public Task<string> ExecuteAsync(string argument)
         {
             int roll = new Random().Next(1, 101);
